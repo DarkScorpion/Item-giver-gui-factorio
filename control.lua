@@ -84,13 +84,6 @@ script.on_event(defines.events.on_player_main_inventory_changed, function(event)
   end
 end)
 
-script.on_event(defines.events.on_player_quickbar_inventory_changed, function(event)
-  local player = game.players[event.player_index]
-  if player.gui.center.igg_gui then
-    igg.update_gui(player)
-  end
-end)
-
 script.on_event(defines.events.on_gui_selection_state_changed, function(event)
   local player = game.players[event.player_index]
   if event.element.name == "igg_list" then
@@ -121,14 +114,6 @@ end
 function get_inventory(player)
   local items = {}
   local main = player.get_inventory(defines.inventory.player_main).get_contents()
-  local bar = player.get_inventory(defines.inventory.player_quickbar).get_contents()
-  for k,v in pairs(bar) do
-    if main[k] then
-      main[k] = main[k] + v
-    else
-      main[k] = v
-    end
-  end
   for k,v in pairs(main) do
     table.insert(items, {name = k, amount = v})
   end
@@ -340,8 +325,7 @@ function take(player, i, amount)
   if items[i] then
     local item = {name = i, count = amount}
     local main = player.get_inventory(defines.inventory.player_main)
-    local bar = player.get_inventory(defines.inventory.player_quickbar)
-    if main.find_item_stack(i) or bar.find_item_stack(i) then
+    if main.find_item_stack(i) then
       local amount = player.remove_item(item)
       player.print("Successfully removed "..amount.." items!")
     else
